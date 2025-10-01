@@ -58,7 +58,7 @@ void Motor_Set_Mode(int motor,int mode) {
 void Motor_Set_PWM(int motor,int PWMvar) {
     if (PWMvar >= 0)
     {
-        PWMvar = PWMvar * 1.03;
+        PWMvar = PWMvar * 1.07;
         Motor_Set_Mode(motor,1);
     }else
     {

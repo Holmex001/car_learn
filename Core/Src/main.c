@@ -56,14 +56,16 @@
 
 /* USER CODE BEGIN PV */
 PID_Controller my_pid;
-float Kp = 46.5f;//
+// float Kp = 59.5f;//
+float Kp = 73.5f;//
 float Ki = 0.0f;
-float Kd =128.8f;
+// float Kd =160.8f;
+float Kd =0.09;
 
 float angle[3];
 char msg[100];
 
-float set_y_angle = -1.4f;
+float set_y_angle = -2.5f;
 
 sensor_accel_fifo_s sensor_accel_fifo;
 sensor_gyro_fifo_s sensor_gyro_fifo;
@@ -131,6 +133,8 @@ int main(void)
     mpu6500_run();
     mpu6500_run();
     mpu6500_run();
+    mpu6500_run();
+    mpu6500_run();
     fusion_init();
     // fusion_cali(&sensor_gyro_fifo);
 
@@ -171,8 +175,8 @@ int main(void)
   while (1)
   {
 
-    mpu6500_run();
-    fusion_update(&sensor_accel_fifo, &sensor_gyro_fifo, angle);
+    // mpu6500_run();
+    // fusion_update(&sensor_accel_fifo, &sensor_gyro_fifo, angle);
     HAL_Delay(10);
 
     /* USER CODE END WHILE */
@@ -242,13 +246,17 @@ char *Float2String(float value)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  if (htim == (&htim2))
+  if (htim == &htim2)
   {
+
+    mpu6500_run();
+    fusion_update(&sensor_accel_fifo, &sensor_gyro_fifo, angle);
 
     float pwm_stand_up =  PID_Stand_UP(&my_pid, angle[1], sensor_gyro_fifo.y[0]);
     // sprintf(msg ,"Angle Y : %s,pwm_stand_up : %s \n", Float2String(angle[1]), Float2String(pwm_stand_up));
     // sprintf(msg ,"%s,%s,%d\n", Float2String(angle[1]), Float2String(sensor_gyro_fifo.y[0]), (int)pwm_stand_up);
-    // HAL_UART_Transmit(&huart4, (uint8_t *)msg, strlen(msg), 1000);
+    sprintf(msg ,"%d,%d,%d\n", (int)(angle[1]*10), (int)(sensor_gyro_fifo.y[0]), (int)pwm_stand_up);
+    HAL_UART_Transmit_IT(&huart4, (uint8_t *)msg, strlen(msg));
     Motor_Set_PWM(0,(int)pwm_stand_up);
     Motor_Set_PWM(1,(int)pwm_stand_up);
 
