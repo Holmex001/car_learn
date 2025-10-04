@@ -36,7 +36,8 @@ float PID_Stand_UP(PID_Controller *pid, float current_value, float delta_gyro)
     float error = current_value - pid->setpoint;
     pid->integral += error;
     float derivative = error - pid->prev_error;
-    float output = pid->Kp * error + pid->Ki * pid->integral + pid->Kd * derivative;
+    // float output = pid->Kp * error + pid->Ki * pid->integral + pid->Kd * derivative;
+    float output = pid->Kp * error + pid->Ki * pid->integral + pid->Kd * delta_gyro;
     pid->prev_error = error;
 
     return output;
